@@ -1,11 +1,14 @@
+
+import { useContext } from "react";
 import { Header } from "../../components/Header";
 import { Summary } from "../../components/summary";
+import { TransactionsContext } from "../../contexts/TrasactionsContext";
 import { SearchForm } from "./components/SearchForm";
 import { PrinceHighlight, TransactionContainer, TransactionTable } from "./styles";
-
+import { dateFormatter, priceFormatter } from "../../utils/formatter";
 
 export function Transactions() {
-
+    const { transactions } = useContext(TransactionsContext)
     return (
         <div>
             <Header/>
@@ -15,25 +18,21 @@ export function Transactions() {
             <SearchForm/>
             <TransactionTable>
                 <tbody>
-                    <tr>
-                        <td width="50%">Desenvolvimento do site</td>
-                        <td> <PrinceHighlight variant="income">R$ 12.000,00</PrinceHighlight></td>
-                        <td>Venda</td>
-                        <td>20/02/2022</td>
-                    </tr>
-                    <tr>
-                        <td width="50%">Hamburguer</td>
-                        <td><PrinceHighlight variant="outcome"> - R$59,00 </PrinceHighlight></td>
-                        <td>Alimentação</td>
-                        <td>20/02/2022</td>
-                    </tr>
-                    <tr>
-                        <td width="50%">Desenvolvimento do site</td>
-                        <td>R$ 12.000,00</td>
-                        <td>Venda</td>
-                        <td>20/02/2022</td>
-
-                    </tr>
+                    {transactions.map(transaction => {
+                        return (
+                            <tr key={transaction.id}>
+                                <td width="50%">{transaction.description}</td>
+                                <td>
+                                    <PrinceHighlight variant={transaction.type}>
+                                        {transaction.type === 'outcome' && '- '}
+                                        {priceFormatter.format(transaction.price)}
+                                    </PrinceHighlight>
+                                </td>
+                                <td>{transaction.category}</td>
+                                <td>{dateFormatter.format(new Date(transaction.createdAt))}</td>
+                            </tr>
+                        )
+                    })}
                 </tbody>
             </TransactionTable>
             </TransactionContainer>
